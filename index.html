@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafio de Lógica e Raciocínio</title>
+    <!-- Incluindo a configuração do Tailwind CSS. Deve vir antes do script principal do Tailwind. -->
+    <script>
+        // Configuração do Tailwind CSS para o modo escuro: 'class' strategy
+        tailwind.config = {
+            darkMode: 'class', 
+            theme: {
+                extend: {
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'], // Define a fonte 'Inter' para ser usada via Tailwind
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script> <!-- Script do Tailwind CSS -->
+    
+    <!-- Fonte Inter do Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Link para o seu arquivo CSS personalizado. Deve vir por último para permitir overrides. -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-100 text-slate-800 flex items-center justify-center min-h-screen p-4
+             dark:bg-gray-900 dark:text-gray-100 font-inter">
+
+    <div class="w-full max-w-2xl mx-auto">
+        <!-- Botão de Alternância de Tema -->
+        <button id="theme-toggle" class="fixed top-4 right-4 p-3 rounded-full bg-slate-200 text-slate-700 shadow-md
+                                         hover:bg-slate-300 transition-colors z-50
+                                         dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+            ☀️ <!-- Ícone de Sol (modo claro) - será alterado via JS -->
+        </button>
+
+        <!-- TELA INICIAL -->
+        <div id="start-screen" class="screen bg-white p-6 sm:p-8 rounded-xl shadow-lg text-center
+                                     dark:bg-gray-800 dark:text-gray-100">
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-4 dark:text-white">Desafio de Lógica e Raciocínio</h1>
+            <p class="text-base sm:text-lg text-slate-600 mb-2 dark:text-gray-300">Bem-vindo ao teste! Você terá <span class="font-bold text-indigo-600 dark:text-indigo-400">35 segundos</span> para responder cada pergunta.</p>
+            <p class="text-base sm:text-lg text-slate-600 mb-2 dark:text-gray-300">Para garantir a precisão do seu raciocínio, respostas <span class="font-bold text-red-600 dark:text-red-400">incorretas</span> ou não confirmadas no tempo limite <span class="font-bold text-red-600 dark:text-red-400">subtrairão pontos</span>.</p>
+            <p class="text-base sm:text-lg text-slate-600 mb-8 dark:text-gray-300">Pressione o botão abaixo para começar.</p>
+            <button id="start-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors shadow-md">
+                Iniciar Teste
+            </button>
+            
+            <!-- SEÇÃO DE CRÉDITOS NA TELA INICIAL -->
+            <div class="mt-6 text-xs text-slate-500 dark:text-gray-400">
+        <p class="mb-1">Desenvolvido por MSKTBOOST.</p>
+        <p class="mb-1">Questões inspiradas em estudos de QI (GRE/GMAT) e currículo escolar brasileiro.</p>
+        <p>© 2025 O MAS LINDO DE TODOS <strong style="text-transform: uppercase;">GABRIEL BORGES</strong>.</p> 
+            </div>
+            <!-- FIM DA SEÇÃO DE CRÉDITOS -->
+
+        </div>
+
+        <!-- TELA DO TESTE -->
+        <div id="test-screen" class="screen hidden">
+            <!-- Cabeçalho do Teste -->
+            <div class="bg-white p-4 sm:p-6 rounded-t-xl shadow-lg dark:bg-gray-800">
+                <div class="flex justify-between items-center mb-2">
+                    <div>
+                        <h2 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">Questão <span id="question-number"></span>/<span id="total-questions"></span></h2>
+                        <span id="question-category" class="text-xs sm:text-sm text-indigo-500 font-medium dark:text-indigo-400"></span> 
+                    </div>
+                    <div id="timer-container" class="text-right">
+                        <span class="text-xs sm:text-sm text-slate-500 dark:text-gray-400">Tempo restante</span>
+                        <div id="timer-display" class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-gray-100">35</div>
+                    </div>
+                </div>
+                 <!-- Barra de Progresso -->
+                <div class="w-full bg-slate-200 rounded-full h-2.5 dark:bg-gray-700">
+                    <div id="progress-bar" class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%; transition: width 0.5s, background-color 0.5s;"></div>
+                </div>
+            </div>
+            
+            <!-- Corpo da Pergunta -->
+            <div class="bg-slate-50 p-6 sm:p-8 dark:bg-gray-800">
+                <p id="question-text" class="text-base sm:text-lg font-semibold mb-6 min-h-[5em] dark:text-gray-100"></p>
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                    <!-- Opções serão inseridas aqui via JS -->
+                </div>
+            </div>
+
+            <!-- Rodapé com Botões -->
+            <div class="bg-white p-4 sm:p-6 rounded-b-xl shadow-lg flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 dark:bg-gray-800">
+                <button id="confirm-btn" class="w-full sm:w-auto bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors shadow-md">
+                    Confirmar
+                </button>
+                <button id="next-btn" class="w-full sm:w-auto bg-slate-300 text-slate-500 font-bold py-3 px-6 rounded-lg transition-colors cursor-not-allowed">
+                    Próxima
+                </button>
+            </div>
+        </div>
+
+        <!-- TELA DE RESULTADOS -->
+        <div id="result-screen" class="screen hidden bg-white p-6 sm:p-8 rounded-xl shadow-lg text-center
+                                     dark:bg-gray-800 dark:text-gray-100">
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-4 dark:text-white">Teste Finalizado!</h1>
+            <p class="text-base sm:text-lg text-slate-600 mb-6 dark:text-gray-300">Confira o seu desempenho abaixo:</p>
+            
+            <!-- SEÇÃO DE CLASSIFICAÇÃO DE RACIOCÍNIO - ESTILOS ADAPTADOS À IMAGEM E ACIMA DA PONTUAÇÃO -->
+            <div class="bg-indigo-900 p-6 rounded-lg mb-6 text-white text-center">
+                <h3 class="text-lg sm:text-xl font-bold mb-2">Classificação de Raciocínio</h3>
+                <p class="text-base sm:text-lg mb-2">Com base no seu desempenho neste desafio, sua capacidade de raciocínio lógico foi classificada como:</p>
+                <p id="qi-assessment" class="text-2xl sm:text-3xl font-extrabold"></p>
+                <p class="text-xs text-gray-400 mt-4">
+                    <strong class="font-semibold">Aviso:</strong> Este é um desafio de lógica e raciocínio e <span class="font-bold">não é um teste de QI formal</span>. As classificações são uma estimativa baseada no seu desempenho aqui e nas referências fornecidas sobre Quociente de Inteligência, que é um conceito complexo e avaliado por testes psicométricos padronizados e profissionais.
+                </p>
+            </div>
+
+            <!-- Seções de Pontuação, Tempo Médio -->
+            <div class="flex flex-col md:flex-row gap-4 justify-center mb-6">
+                <!-- Caixa de Pontuação: Agora com Acertos e Perdidos -->
+                <div class="bg-slate-100 p-6 rounded-lg flex-1 dark:bg-gray-700">
+                    <p class="text-base sm:text-lg text-slate-700 dark:text-gray-300">Pontuação Final</p>
+                    <p class="text-4xl sm:text-5xl font-extrabold text-indigo-600 my-2 dark:text-indigo-400"><span id="score">0</span></p>
+                    <p class="text-base sm:text-lg text-slate-700 dark:text-gray-300">Acertos: <span id="points-gained">0</span></p>
+                    <p class="text-base sm:text-lg text-slate-700 dark:text-gray-300">Perdidos: <span id="points-lost">0</span></p>
+                </div>
+                <!-- Caixa de Tempo Médio -->
+                <div class="bg-slate-100 p-6 rounded-lg flex-1 dark:bg-gray-700">
+                    <p class="text-base sm:text-lg text-slate-700 dark:text-gray-300">Tempo Médio</p>
+                    <p class="text-4xl sm:text-5xl font-extrabold text-indigo-600 my-2 dark:text-indigo-400"><span id="average-time">0</span>s</p>
+                    <p class="text-base sm:text-lg text-slate-700 dark:text-gray-300">por resposta</p>
+                </div>
+            </div>
+            
+            <!-- High Score -->
+            <div class="bg-slate-100 p-6 rounded-lg mb-6 dark:bg-gray-700">
+                <p class="text-base sm:text-lg text-slate-700 dark:text-gray-300">Maior Pontuação</p>
+                <p class="text-4xl sm:text-5xl font-extrabold text-green-600 my-2 dark:text-green-400"><span id="high-score">0</span></p>
+            </div>
+
+            <!-- Pontuação por Categoria -->
+            <div id="category-scores-wrapper" class="bg-slate-100 p-6 rounded-lg mb-6 text-left dark:bg-gray-700">
+                <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-4 dark:text-white">Desempenho por Categoria</h3>
+                <div id="category-scores-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-slate-700 dark:text-gray-300">
+                    <!-- Detalhes por categoria serão inseridos aqui via JS -->
+                </div>
+            </div>
+
+            <p id="result-message" class="text-base sm:text-lg font-medium mb-8 dark:text-gray-300"></p>
+            <button id="restart-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors shadow-md">
+                Tentar Novamente
+            </button>
+        </div>
+    </div>
+
+    <!-- Link para o seu arquivo JavaScript. Deve ser ao final do <body> para garantir que todos os elementos HTML estejam carregados antes do script tentar acessá-los. -->
+    <script src="script.js"></script>
+</body>
+</html>

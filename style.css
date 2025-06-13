@@ -1,0 +1,21 @@
+/* Estilo base usando a fonte Inter */
+body {
+    font-family: 'Inter', sans-serif; 
+}
+/* Estilo para a transição suave entre telas */
+.screen {
+    transition: opacity 0.5s ease-in-out; 
+}
+/* Estilo para as opções de resposta */
+.option-card {
+    transition: background-color 0.2s, border-color 0.2s, opacity 0.2s; 
+}
+/* Animação para o timer */
+@keyframes pulse {
+    50% {
+        transform: scale(1.1); 
+    }
+}
+.timer-pulse {
+    animation: pulse 1s infinite; 
+}
